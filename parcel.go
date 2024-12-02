@@ -40,7 +40,7 @@ func (s ParcelStore) Get(number int) (Parcel, error) {
 	err := row.Scan(&p.Number, &p.Client, &p.Status, &p.Address, &p.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return p, fmt.Errorf("посылка с номером %d не найдена", number)
+			return Parcel{}, fmt.Errorf("посылка с номером %d не найдена", number)
 		}
 		return p, err
 	}
@@ -65,6 +65,9 @@ func (s ParcelStore) GetByClient(client int) ([]Parcel, error) {
 			return nil, err
 		}
 		res = append(res, p)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 
 	return res, nil
@@ -112,6 +115,7 @@ func (s ParcelStore) Delete(number int) error {
 		return err
 	}
 	rowsAffected, err := result.RowsAffected()
+	fmt.Println(rowsAffected)
 	if err != nil {
 		return err
 	}
